@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'movieRegistrationPage.dart'; 
+import 'movieRegistrationPage.dart';
+import 'movieListPage.dart'; // Import MovieListPage
 
 void main() {
   runApp(MyApp());
@@ -26,17 +27,31 @@ class MainPage extends StatelessWidget {
         title: Text('영화 등록 앱'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MovieRegistrationPage()),
-            );
-          },
-          child: Text('영화 등록하기'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MovieRegistrationPage()),
+                );
+              },
+              child: Text('영화 등록하기'),
+            ),
+            SizedBox(height: 20), // Add some spacing
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MovieListPage()), // Navigate to MovieListPage
+                );
+              },
+              child: Text('영화 목록 보기'),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-  
