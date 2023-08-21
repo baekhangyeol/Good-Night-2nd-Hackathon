@@ -1,57 +1,57 @@
-import 'package:flutter/material.dart';
-import 'movieRegistrationPage.dart';
-import 'movieListPage.dart'; // Import MovieListPage
+// import 'package:flutter/material.dart';
+// import 'movieRegistrationPage.dart';
+// import 'movieListPage.dart'; // Import MovieListPage
 
-void main() {
-  runApp(MyApp());
-}
+// void main() {
+//   runApp(MyApp());
+// }
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Movie Registration App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MainPage(),
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Movie Registration App',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: MainPage(),
+//     );
+//   }
+// }
 
-class MainPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('영화 등록 앱'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MovieRegistrationPage()),
-                );
-              },
-              child: Text('영화 등록하기'),
-            ),
-            SizedBox(height: 20), // Add some spacing
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MovieListPage()), // Navigate to MovieListPage
-                );
-              },
-              child: Text('영화 목록 보기'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// class MainPage extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('영화 등록 앱'),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             ElevatedButton(
+//               onPressed: () {
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(builder: (context) => MovieRegistrationPage()),
+//                 );
+//               },
+//               child: Text('영화 등록하기'),
+//             ),
+//             SizedBox(height: 20), // Add some spacing
+//             ElevatedButton(
+//               onPressed: () {
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(builder: (context) => MovieListPage()), // Navigate to MovieListPage
+//                 );
+//               },
+//               child: Text('영화 목록 보기'),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

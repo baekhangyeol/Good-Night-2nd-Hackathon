@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:hackaton_flutter/pages/mainPage.dart';
-import 'package:hackaton_flutter/pages/movieListPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:hackaton_flutter/pages/movieListPage.dart';
 
-class MovieRegistrationPage extends StatefulWidget {
+class MovieUpdatePage extends StatefulWidget {
+  final MovieResponse movie;
+  final Function() onMovieUpdated;
+
+  MovieUpdatePage({required this.movie, required this.onMovieUpdated});
+
   @override
-  _MovieRegistrationPageState createState() => _MovieRegistrationPageState();
+  _MovieUpdatePageState createState() => _MovieUpdatePageState();
 }
 
-class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
+class _MovieUpdatePageState extends State<MovieUpdatePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _openDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
-  String _selectedGenre = 'ACTION'; // Default genre value
+  String _selectedGenre = '';
 
-  void _clearFormFields() {
-    _titleController.clear();
-    _openDateController.clear();
-    _endDateController.clear();
-    setState(() {
-      _selectedGenre = 'ACTION';
-    });
+  @override
+  void initState() {
+    super.initState();
+    _titleController.text = widget.movie.title;
+    _openDateController.text = widget.movie.openDate;
+    _endDateController.text = widget.movie.endDate;
+    _selectedGenre = widget.movie.genre;
   }
 
-  Future<void> _registerMovie() async {
-    final String apiUrl = 'http://localhost:8080/api/v1/movies'; // 자신의 엔드포인트로 변경하세요
+  Future<void> _updateMovie() async {
+    final String apiUrl = 'http://localhost:8080/api/v1/movies/${widget.movie.id}';
 
     if (_titleController.text.isEmpty ||
         _openDateController.text.isEmpty ||
@@ -39,7 +43,7 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
             actions: <Widget>[
               TextButton(
                 child: Text('OK'),
-                onPressed: () { 
+                onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
@@ -57,7 +61,7 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
       'endDate': _endDateController.text,
     };
 
-    final http.Response response = await http.post(
+    final http.Response response = await http.patch(
       Uri.parse(apiUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(requestData),
@@ -69,16 +73,14 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
         builder: (context) {
           return AlertDialog(
             title: Text('성공'),
-            content: Text('영화가 등록되었습니다!'),
+            content: Text('영화 정보가 수정되었습니다!'),
             actions: <Widget>[
               TextButton(
                 child: Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  _clearFormFields();
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => MovieListPage(),
-                  ));
+                  Navigator.of(context).pop(); // 수정 완료 후 이전 페이지로 돌아가기
+                  widget.onMovieUpdated();
                 },
               ),
             ],
@@ -91,7 +93,7 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
         builder: (context) {
           return AlertDialog(
             title: Text('에러'),
-            content: Text('영화 등록에 실패하였습니다!'),
+            content: Text('영화 정보 수정에 실패하였습니다!'),
             actions: <Widget>[
               TextButton(
                 child: Text('OK'),
@@ -110,7 +112,7 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('영화 등록'),
+        title: Text('영화 정보 수정'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -172,23 +174,12 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _registerMovie,
-              child: Text('등록'),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // 뒤로가기 버튼
-              },
-              child: Text('뒤로가기'),
+              onPressed: _updateMovie,
+              child: Text('수정 완료'),
             ),
           ],
         ),
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(home: MovieRegistrationPage()));
 }
