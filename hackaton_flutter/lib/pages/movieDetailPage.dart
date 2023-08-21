@@ -1,7 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:hackaton_flutter/pages/movieListPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+class MovieResponse {
+  final String title;
+  final String genre;
+  final bool onScreen;
+  final String openDate;
+  final String endDate;
+  final int id;
+
+  MovieResponse({
+    required this.title,
+    required this.genre,
+    required this.onScreen,
+    required this.openDate,
+    required this.endDate,
+    required this.id,
+  });
+
+  factory MovieResponse.fromJson(Map<String, dynamic> json) {
+    return MovieResponse(
+      id: json['id'],
+      title: json['title'],
+      genre: json['genre'],
+      onScreen: json['onScreen'],
+      openDate: json['openDate'],
+      endDate: json['endDate'],
+    );
+  }
+}
 
 class MovieDetailPage extends StatelessWidget {
   final int movieId;
@@ -9,7 +37,7 @@ class MovieDetailPage extends StatelessWidget {
   MovieDetailPage({required this.movieId});
 
   Future<MovieResponse> _fetchMovieDetails() async {
-    final String apiUrl = 'http://localhost:8080/api/v1/movies/$movieId'; // 실제 API 엔드포인트로 변경
+    final String apiUrl = 'http://localhost:8080/api/v1/movies/$movieId';
 
     final http.Response response = await http.get(Uri.parse(apiUrl));
 

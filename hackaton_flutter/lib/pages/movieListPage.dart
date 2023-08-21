@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hackaton_flutter/pages/movieDetailPage.dart';
+import 'package:hackaton_flutter/pages/movieRegistrationPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -72,17 +73,29 @@ class _MovieListPageState extends State<MovieListPage> {
         itemBuilder: (context, index) {
           final movie = _movies[index];
           return ListTile(
-  title: Text(movie.title),
-  subtitle: Text('장르: ${movie.genre}\n상영중 여부: ${movie.onScreen ? '상영중' : '상영 종료'}'),
-  trailing: Text('개봉일: ${movie.openDate}\n상영마감일: ${movie.endDate}'),
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MovieDetailPage(movieId: movie.id)),
-    );
-  },
-);
+            title: Text(movie.title),
+            subtitle: Text('장르: ${movie.genre}\n상영중 여부: ${movie.onScreen ? '상영중' : '상영 종료'}'),
+            trailing: Text('개봉일: ${movie.openDate}\n상영마감일: ${movie.endDate}'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MovieDetailPage(movieId: movie.id)),
+              );
+            },
+          );
         },
+      ),
+      bottomNavigationBar: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MovieRegistrationPage()),
+          );
+        },
+        child: Text('영화 추가'),
+      ),
       ),
     );
   }

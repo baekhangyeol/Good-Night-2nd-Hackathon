@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hackaton_flutter/pages/mainPage.dart';
+import 'package:hackaton_flutter/pages/movieListPage.dart';
 import 'package:hackaton_flutter/pages/movieRegistrationPage.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Fit-A-Pet',
       ),
-      home: MainPage(),
+      home: MovieListPage(),
     );
   }
 }

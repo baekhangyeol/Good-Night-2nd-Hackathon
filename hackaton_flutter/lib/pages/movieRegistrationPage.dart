@@ -174,6 +174,13 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
               onPressed: _registerMovie,
               child: Text('등록'),
             ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // 뒤로가기 버튼
+              },
+              child: Text('뒤로가기'),
+            ),
           ],
         ),
       ),
