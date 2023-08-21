@@ -24,7 +24,7 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
   }
 
   Future<void> _registerMovie() async {
-    final String apiUrl = 'http://localhost:8080/api/v1/movies'; // 실제 API 엔드포인트로 변경
+    final String apiUrl = 'http://localhost:8080/api/v1/movies'; // 자신의 엔드포인트로 변경하세요
 
     if (_titleController.text.isEmpty ||
         _openDateController.text.isEmpty ||
@@ -74,9 +74,9 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
                 child: Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  _clearFormFields(); // 폼 필드를 지우는 함수 호출
+                  _clearFormFields();
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => MainPage(), // MainPage로 이동
+                    builder: (context) => MainPage(),
                   ));
                 },
               ),
