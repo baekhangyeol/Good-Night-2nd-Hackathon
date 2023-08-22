@@ -41,19 +41,37 @@ class MovieListPage extends StatefulWidget {
 
 class _MovieListPageState extends State<MovieListPage> {
   List<MovieResponse> _movies = [];
+  String? _selectedGenre;
+  bool? _selectedOnScreen;
 
   Future<void> _fetchMovies() async {
-  final String apiUrl = 'http://localhost:8080/api/v1/movies'; // 실제 API 엔드포인트로 변경
+  String apiUrl = 'http://localhost:8080/api/v1/movies';
+
+  if (_selectedGenre != null || _selectedOnScreen != null) {
+    apiUrl += '?';
+
+    if (_selectedGenre != null) {
+      apiUrl += 'genre=$_selectedGenre';
+    }
+
+    if (_selectedOnScreen != null) {
+      if (_selectedGenre != null) {
+        apiUrl += '&';
+      }
+      apiUrl += 'onScreen=$_selectedOnScreen';
+    }
+  }
 
   final http.Response response = await http.get(Uri.parse(apiUrl));
 
   if (response.statusCode == 200) {
-    final List<dynamic> jsonList = jsonDecode(utf8.decode(response.bodyBytes)); // 수정된 부분
+    final List<dynamic> jsonList = jsonDecode(utf8.decode(response.bodyBytes));
     setState(() {
       _movies = jsonList.map((json) => MovieResponse.fromJson(json)).toList();
     });
   }
 }
+
 
 Future<void> _deleteMovie(MovieResponse movie) async {
   final apiUrl = 'http://localhost:8080/api/v1/movies/${movie.id}';
@@ -131,6 +149,8 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieResponse movie) {
   @override
   void initState() {
     super.initState();
+    _selectedGenre = null;
+    _selectedOnScreen = null;
     _fetchMovies();
   }
 
@@ -140,43 +160,93 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieResponse movie) {
       appBar: AppBar(
         title: Text('영화 목록'),
       ),
-      body: ListView.builder(
-        itemCount: _movies.length,
-        itemBuilder: (context, index) {
-          final movie = _movies[index];
-          return InkWell( // 변경된 부분: ListTile 대신 InkWell 사용
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MovieDetailPage(movieId: movie.id)),
-              );
-            },
-            child: ListTile(
-              title: Text(movie.title),
-              subtitle: Text('장르: ${movie.genre}\n상영중 여부: ${movie.onScreen ? '상영중' : '상영 종료'}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MovieUpdatePage(movie: movie, onMovieUpdated: _fetchMovies)),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete), // 삭제 버튼 아이콘
-                    onPressed: () async {
-                      _showDeleteConfirmationDialog(context, movie);
-                    },
-                  ),
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DropdownButton<String>(
+                value: _selectedGenre,
+                items: [
+                  DropdownMenuItem(value: null, child: Text('장르 선택')),
+                  DropdownMenuItem(value: 'ACTION', child: Text('ACTION')),
+                  DropdownMenuItem(value: 'THRILLER', child: Text('THRILLER')),
+                  DropdownMenuItem(value: 'ROMANCE', child: Text('ROMANCE')),
+                  DropdownMenuItem(value: 'COMEDY', child: Text('COMEDY')),
                 ],
+                onChanged: (value) {
+                  setState(() {
+                    if (_selectedGenre != value) {
+                      _selectedGenre = value;
+                    } else {
+                      _selectedGenre = null; // 필터링 해제
+                    }
+                    _fetchMovies();
+                  });
+                },
               ),
+              SizedBox(width: 16),
+              DropdownButton<bool>(
+                value: _selectedOnScreen,
+                items: [
+                  DropdownMenuItem(value: null, child: Text('상영 여부 선택')),
+                  DropdownMenuItem(value: true, child: Text('상영중')),
+                  DropdownMenuItem(value: false, child: Text('상영 종료')),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    if (_selectedOnScreen != value) {
+                      _selectedOnScreen = value;
+                    } else {
+                      _selectedOnScreen = null; // 필터링 해제
+                    }
+                    _fetchMovies();
+                  });
+                },
+              ),
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _movies.length,
+              itemBuilder: (context, index) {
+                final movie = _movies[index];
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MovieDetailPage(movieId: movie.id)),
+                    );
+                  },
+                  child: ListTile(
+                    title: Text(movie.title),
+                    subtitle: Text('장르: ${movie.genre}\n상영중 여부: ${movie.onScreen ? '상영중' : '상영 종료'}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MovieUpdatePage(movie: movie, onMovieUpdated: _fetchMovies)),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () async {
+                            _showDeleteConfirmationDialog(context, movie);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
