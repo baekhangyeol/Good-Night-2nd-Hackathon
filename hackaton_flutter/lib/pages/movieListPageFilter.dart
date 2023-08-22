@@ -1,74 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:hackaton_flutter/pages/movieDetailPage.dart';
 import 'package:hackaton_flutter/pages/movieRegistrationPage.dart';
-import 'package:hackaton_flutter/pages/movieUpdatePage.dart';
+import 'package:hackaton_flutter/pages/movieUpdatePageFilter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class MovieWithAvgScoreResponse {
-  final int id;
+class MovieResponse {
   final String title;
-  final DateTime openDate;
-  final DateTime endDate;
-  final bool onScreen;
   final String genre;
-  final double avgScore;
+  final bool onScreen;
+  final String openDate;
+  final String endDate;
+  final int id;
 
-  MovieWithAvgScoreResponse({
-    required this.id,
+  MovieResponse({
     required this.title,
+    required this.genre,
+    required this.onScreen,
     required this.openDate,
     required this.endDate,
-    required this.onScreen,
-    required this.genre,
-    required this.avgScore,
+    required this.id,
   });
 
-  factory MovieWithAvgScoreResponse.fromJson(Map<String, dynamic> json) {
-    return MovieWithAvgScoreResponse(
+  factory MovieResponse.fromJson(Map<String, dynamic> json) {
+    return MovieResponse( 
       id: json['id'],
       title: json['title'],
-      openDate: DateTime.parse(json['openDate']),
-      endDate: DateTime.parse(json['endDate']),
-      onScreen: json['onScreen'],
       genre: json['genre'],
-      avgScore: json['avgScore'] != null ? json['avgScore'].toDouble() : 0.0, // Provide a default value if avgScore is null
+      onScreen: json['onScreen'],
+      openDate: json['openDate'],
+      endDate: json['endDate'],
     );
   }
 }
 
-
-class MovieListPage extends StatefulWidget {
+class MovieListPageFilter extends StatefulWidget {
   @override
-  _MovieListPageState createState() => _MovieListPageState();
+  _MovieListPageFilterState createState() => _MovieListPageFilterState();
 }
 
-class _MovieListPageState extends State<MovieListPage> {
-  List<MovieWithAvgScoreResponse> _movies = [];
+class _MovieListPageFilterState extends State<MovieListPageFilter> {
+  List<MovieResponse> _movies = [];
   String? _selectedGenre;
   bool? _selectedOnScreen;
-  int _currentPage = 0;
-  int _totalPages = 1;
 
-  void _fetchMovies(int page) async {
-    final String apiUrl = 'http://localhost:8080/api/v1/movies/avg?page=0&size=10';
+  Future<void> _fetchMovies() async {
+  String apiUrl = 'http://localhost:8080/api/v1/movies';
 
-    final http.Response response = await http.get(Uri.parse(apiUrl));
+  if (_selectedGenre != null || _selectedOnScreen != null) {
+    apiUrl += '?';
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
-      final List<dynamic> jsonList = jsonResponse['items'];
-      final int totalPages = jsonResponse['totalPages'];
+    if (_selectedGenre != null) {
+      apiUrl += 'genre=$_selectedGenre';
+    }
 
-      setState(() {
-        _movies = jsonList.map((json) => MovieWithAvgScoreResponse.fromJson(json)).cast<MovieWithAvgScoreResponse>().toList();
-        _totalPages = totalPages;
-      });
+    if (_selectedOnScreen != null) {
+      if (_selectedGenre != null) {
+        apiUrl += '&';
+      }
+      apiUrl += 'onScreen=$_selectedOnScreen';
     }
   }
 
+  final http.Response response = await http.get(Uri.parse(apiUrl));
 
-Future<void> _deleteMovie(MovieWithAvgScoreResponse movie) async {
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonList = jsonDecode(utf8.decode(response.bodyBytes));
+    setState(() {
+      _movies = jsonList.map((json) => MovieResponse.fromJson(json)).toList();
+    });
+  }
+}
+
+
+Future<void> _deleteMovie(MovieResponse movie) async {
   final apiUrl = 'http://localhost:8080/api/v1/movies/${movie.id}';
   final http.Response response = await http.delete(Uri.parse(apiUrl));
 
@@ -91,7 +96,7 @@ Future<void> _deleteMovie(MovieWithAvgScoreResponse movie) async {
       },
     );
     // 삭제 성공
-    _fetchMovies(_currentPage); // 영화 목록 다시 불러오기
+    _fetchMovies(); // 영화 목록 다시 불러오기
   } else {
     // 삭제 실패
     showDialog(
@@ -114,7 +119,7 @@ Future<void> _deleteMovie(MovieWithAvgScoreResponse movie) async {
   }
 }
 
-void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreResponse movie) {
+void _showDeleteConfirmationDialog(BuildContext context, MovieResponse movie) {
   showDialog(
     context: context,
     builder: (context) {
@@ -146,10 +151,8 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreRespon
     super.initState();
     _selectedGenre = null;
     _selectedOnScreen = null;
-    _fetchMovies(0);
+    _fetchMovies();
   }
-
-  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +162,50 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreRespon
       ),
       body: Column(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DropdownButton<String>(
+                value: _selectedGenre,
+                items: [
+                  DropdownMenuItem(value: null, child: Text('장르 선택')),
+                  DropdownMenuItem(value: 'ACTION', child: Text('ACTION')),
+                  DropdownMenuItem(value: 'THRILLER', child: Text('THRILLER')),
+                  DropdownMenuItem(value: 'ROMANCE', child: Text('ROMANCE')),
+                  DropdownMenuItem(value: 'COMEDY', child: Text('COMEDY')),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    if (_selectedGenre != value) {
+                      _selectedGenre = value;
+                    } else {
+                      _selectedGenre = null; // 필터링 해제
+                    }
+                    _fetchMovies();
+                  });
+                },
+              ),
+              SizedBox(width: 16),
+              DropdownButton<bool>(
+                value: _selectedOnScreen,
+                items: [
+                  DropdownMenuItem(value: null, child: Text('상영 여부 선택')),
+                  DropdownMenuItem(value: true, child: Text('상영중')),
+                  DropdownMenuItem(value: false, child: Text('상영 종료')),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    if (_selectedOnScreen != value) {
+                      _selectedOnScreen = value;
+                    } else {
+                      _selectedOnScreen = null; // 필터링 해제
+                    }
+                    _fetchMovies();
+                  });
+                },
+              ),
+            ],
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: _movies.length,
@@ -173,14 +220,7 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreRespon
                   },
                   child: ListTile(
                     title: Text(movie.title),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('장르: ${movie.genre}'),
-                        Text('상영중 여부: ${movie.onScreen ? '상영중' : '상영 종료'}'),
-                        Text('평균 평점: ${movie.avgScore.toStringAsFixed(2)}'), // Display average score
-                      ],
-                    ),
+                    subtitle: Text('장르: ${movie.genre}\n상영중 여부: ${movie.onScreen ? '상영중' : '상영 종료'}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -189,7 +229,7 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreRespon
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => MovieUpdatePage(movie: movie, onMovieUpdated: () => _fetchMovies(_currentPage))),
+                              MaterialPageRoute(builder: (context) => MovieUpdatePage(movie: movie, onMovieUpdated: _fetchMovies)),
                             );
                           },
                         ),
@@ -222,8 +262,4 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreRespon
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(home: MovieListPage()));
 }

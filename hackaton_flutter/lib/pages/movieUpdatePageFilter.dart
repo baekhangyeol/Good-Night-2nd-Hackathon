@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hackaton_flutter/pages/movieDetailPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:hackaton_flutter/pages/movieListPage.dart';
+import 'package:hackaton_flutter/pages/movieListPageFilter.dart';
 
 class MovieUpdatePage extends StatefulWidget {
-  final MovieWithAvgScoreResponse movie;
+  final MovieResponse movie;
   final Function() onMovieUpdated;
 
   MovieUpdatePage({required this.movie, required this.onMovieUpdated});
@@ -24,8 +23,8 @@ class _MovieUpdatePageState extends State<MovieUpdatePage> {
   void initState() {
     super.initState();
     _titleController.text = widget.movie.title;
-    _openDateController.text = widget.movie.openDate.toString().split(' ')[0];
-    _endDateController.text = widget.movie.endDate.toString().split(' ')[0];
+    _openDateController.text = widget.movie.openDate;
+    _endDateController.text = widget.movie.endDate;
     _selectedGenre = widget.movie.genre;
   }
 
