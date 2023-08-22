@@ -49,6 +49,7 @@ class _MovieListPageState extends State<MovieListPage> {
   bool? _selectedOnScreen;
   int _currentPage = 0;
   int _totalPages = 1;
+  double? _selectedAvgScore;
 
   void _fetchMovies(int page) async {
     final String apiUrl = 'http://localhost:8080/api/v1/movies/avg?page=0&size=10';
@@ -58,61 +59,66 @@ class _MovieListPageState extends State<MovieListPage> {
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
       final List<dynamic> jsonList = jsonResponse['items'];
-      final int totalPages = jsonResponse['totalPages'];
+
+      // 필터링: 평균 평점이 _minAvgScore 이상인 영화만 선택
+      final List<MovieWithAvgScoreResponse> filteredMovies = jsonList
+          .map((json) => MovieWithAvgScoreResponse.fromJson(json))
+          .cast<MovieWithAvgScoreResponse>()
+          .where((movie) => _selectedAvgScore == null || movie.avgScore >= _selectedAvgScore!)
+          .toList();
 
       setState(() {
-        _movies = jsonList.map((json) => MovieWithAvgScoreResponse.fromJson(json)).cast<MovieWithAvgScoreResponse>().toList();
-        _totalPages = totalPages;
+        _movies = filteredMovies;
       });
     }
   }
 
 
-Future<void> _deleteMovie(MovieWithAvgScoreResponse movie) async {
-  final apiUrl = 'http://localhost:8080/api/v1/movies/${movie.id}';
-  final http.Response response = await http.delete(Uri.parse(apiUrl));
+  Future<void> _deleteMovie(MovieWithAvgScoreResponse movie) async {
+    final apiUrl = 'http://localhost:8080/api/v1/movies/${movie.id}';
+    final http.Response response = await http.delete(Uri.parse(apiUrl));
 
-  if (response.statusCode == 200) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('확인'),
-          content: Text('영화가 삭제되었습니다!'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-    // 삭제 성공
-    _fetchMovies(_currentPage); // 영화 목록 다시 불러오기
-  } else {
-    // 삭제 실패
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('에러'),
-          content: Text('영화 삭제에 실패하였습니다!'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+    if (response.statusCode == 200) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('확인'),
+            content: Text('영화가 삭제되었습니다!'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      // 삭제 성공
+      _fetchMovies(_currentPage); // 영화 목록 다시 불러오기
+    } else {
+      // 삭제 실패
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('에러'),
+            content: Text('영화 삭제에 실패하였습니다!'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
-}
 
 void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreResponse movie) {
   showDialog(
@@ -159,6 +165,27 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreRespon
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: DropdownButton<double>(
+              value: _selectedAvgScore,
+              hint: Text('평균 평점으로 필터링'),
+              items: [
+                DropdownMenuItem<double>(value: null, child: Text('전체')),
+                DropdownMenuItem<double>(value: 1.0, child: Text('1.0 이상')),
+                DropdownMenuItem<double>(value: 2.0, child: Text('2.0 이상')),
+                DropdownMenuItem<double>(value: 3.0, child: Text('3.0 이상')),
+                DropdownMenuItem<double>(value: 4.0, child: Text('4.0 이상')),
+                DropdownMenuItem<double>(value: 4.5, child: Text('4.5 이상')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedAvgScore = value;
+                  _fetchMovies(_currentPage);
+                });
+              },
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: _movies.length,
