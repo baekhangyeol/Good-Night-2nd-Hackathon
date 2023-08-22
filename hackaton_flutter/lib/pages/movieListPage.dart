@@ -120,32 +120,32 @@ class _MovieListPageState extends State<MovieListPage> {
     }
   }
 
-void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreResponse movie) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('영화 삭제'),
-        content: Text('정말 삭제하시겠습니까?'),
-        actions: <Widget>[
-          TextButton(
-            child: Text('네'),
-            onPressed: () async {
-              Navigator.of(context).pop(); // 팝업 창 닫기
-              await _deleteMovie(movie); // 영화 삭제 함수 호출
-            },
-          ),
-          TextButton(
-            child: Text('아니요'),
-            onPressed: () {
-              Navigator.of(context).pop(); // 팝업 창 닫기
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+  void _showDeleteConfirmationDialog(BuildContext context, MovieWithAvgScoreResponse movie) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('영화 삭제'),
+          content: Text('정말 삭제하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('네'),
+              onPressed: () async {
+                Navigator.of(context).pop(); // 팝업 창 닫기
+                await _deleteMovie(movie); // 영화 삭제 함수 호출
+              },
+            ),
+            TextButton(
+              child: Text('아니요'),
+              onPressed: () {
+                Navigator.of(context).pop(); // 팝업 창 닫기
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void initState() {

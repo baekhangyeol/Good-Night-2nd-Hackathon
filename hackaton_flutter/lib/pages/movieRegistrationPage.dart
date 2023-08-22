@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hackaton_flutter/pages/mainPage.dart';
 import 'package:hackaton_flutter/pages/movieListPage.dart';
+import 'package:hackaton_flutter/provider/AuthProvider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:provider/provider.dart';
 
 class MovieRegistrationPage extends StatefulWidget {
   @override
@@ -25,7 +27,11 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
   }
 
   Future<void> _registerMovie() async {
-    final String apiUrl = 'http://localhost:8080/api/v1/movies'; // 자신의 엔드포인트로 변경하세요
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    authProvider.setAdminStatus(true);
+    if(authProvider.isAdmin) {
+      final String apiUrl = 'http://localhost:8080/api/v1/movies'; // 자신의 엔드포인트로 변경하세요
 
     if (_titleController.text.isEmpty ||
         _openDateController.text.isEmpty ||
@@ -103,6 +109,10 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
           );
         },
       );
+    }
+    }
+    else {
+      
     }
   }
 

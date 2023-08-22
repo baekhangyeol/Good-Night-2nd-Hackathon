@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hackaton_flutter/pages/movieDetailPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:hackaton_flutter/pages/movieListPage.dart';

@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:hackaton_flutter/pages/mainPage.dart';
-import 'package:hackaton_flutter/pages/movieListPage.dart';
-import 'package:hackaton_flutter/pages/movieRegistrationPage.dart';
+import 'package:hackaton_flutter/provider/AuthProvider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AuthProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       home: MainPage(),
     );
   }
