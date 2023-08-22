@@ -246,7 +246,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     ),
   );
 }
-}
+
 
   Future<MovieResponse> _fetchMovieDetails() async {
     final String apiUrl = 'http://localhost:8080/api/v1/movies/${widget.movieId}';
