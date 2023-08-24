@@ -79,7 +79,7 @@ class _MovieUpdatePageState extends State<MovieUpdatePage> {
                 child: Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.of(context).pop(); // 수정 완료 후 이전 페이지로 돌아가기
+                  Navigator.of(context).pop();
                   widget.onMovieUpdated();
                 },
               ),

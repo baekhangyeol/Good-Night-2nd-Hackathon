@@ -32,7 +32,7 @@ class MovieWithAvgScoreResponse {
       endDate: DateTime.parse(json['endDate']),
       onScreen: json['onScreen'],
       genre: json['genre'],
-      avgScore: json['avgScore'] != null ? json['avgScore'].toDouble() : 0.0, // Provide a default value if avgScore is null
+      avgScore: json['avgScore'] != null ? json['avgScore'].toDouble() : 0.0,
     );
   }
 }
@@ -60,7 +60,6 @@ class _MovieListPageState extends State<MovieListPage> {
       final Map<String, dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
       final List<dynamic> jsonList = jsonResponse['items'];
 
-      // 필터링: 평균 평점이 _minAvgScore 이상인 영화만 선택
       final List<MovieWithAvgScoreResponse> filteredMovies = jsonList
           .map((json) => MovieWithAvgScoreResponse.fromJson(json))
           .cast<MovieWithAvgScoreResponse>()
@@ -96,10 +95,8 @@ class _MovieListPageState extends State<MovieListPage> {
           );
         },
       );
-      // 삭제 성공
-      _fetchMovies(_currentPage); // 영화 목록 다시 불러오기
+      _fetchMovies(_currentPage);
     } else {
-      // 삭제 실패
       showDialog(
         context: context,
         builder: (context) {
@@ -131,14 +128,14 @@ class _MovieListPageState extends State<MovieListPage> {
             TextButton(
               child: Text('네'),
               onPressed: () async {
-                Navigator.of(context).pop(); // 팝업 창 닫기
-                await _deleteMovie(movie); // 영화 삭제 함수 호출
+                Navigator.of(context).pop();
+                await _deleteMovie(movie);
               },
             ),
             TextButton(
               child: Text('아니요'),
               onPressed: () {
-                Navigator.of(context).pop(); // 팝업 창 닫기
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -205,7 +202,7 @@ class _MovieListPageState extends State<MovieListPage> {
                       children: [
                         Text('장르: ${movie.genre}'),
                         Text('상영중 여부: ${movie.onScreen ? '상영중' : '상영 종료'}'),
-                        Text('평균 평점: ${movie.avgScore.toStringAsFixed(2)}'), // Display average score
+                        Text('평균 평점: ${movie.avgScore.toStringAsFixed(2)}'),
                       ],
                     ),
                     trailing: Row(

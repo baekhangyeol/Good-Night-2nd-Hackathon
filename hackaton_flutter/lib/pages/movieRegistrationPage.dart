@@ -15,7 +15,7 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _openDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
-  String _selectedGenre = 'ACTION'; // Default genre value
+  String _selectedGenre = 'ACTION';
 
   void _clearFormFields() {
     _titleController.clear();
@@ -31,7 +31,7 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
 
     authProvider.setAdminStatus(true);
     if(authProvider.isAdmin) {
-      final String apiUrl = 'http://localhost:8080/api/v1/movies'; // 자신의 엔드포인트로 변경하세요
+      final String apiUrl = 'http://localhost:8080/api/v1/movies';
 
     if (_titleController.text.isEmpty ||
         _openDateController.text.isEmpty ||
@@ -188,7 +188,7 @@ class _MovieRegistrationPageState extends State<MovieRegistrationPage> {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // 뒤로가기 버튼
+                Navigator.pop(context);
               },
               child: Text('뒤로가기'),
             ),

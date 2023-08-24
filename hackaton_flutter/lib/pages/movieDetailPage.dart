@@ -100,11 +100,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       if (response.statusCode == 200) {
         _contentController.clear();
         setState(() {
-          _rating = 0.0; // Reset the rating after successful submission
+          _rating = 0.0;
         });
         _showFeedbackDialog(context, '리뷰가 등록되었습니다', true);
         
-        // Fetch reviews to update the list after submitting a review
         await _fetchReviews();
       } else {
         _showFeedbackDialog(context, '리뷰 등록에 실패했습니다', false);
@@ -123,7 +122,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
                 if (isSuccess) {
                   _feedbackMessage = message;
                 }
@@ -185,7 +184,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                     onChanged: (newValue) {
                       setState(() {
                         _minRatingFilter = newValue!;
-                        _applyRatingFilter(); // Apply filter when dropdown changes
+                        _applyRatingFilter();
                       });
                     },
                     items: [
@@ -271,7 +270,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       final List<ReviewResponse> reviews = jsonList.map((json) => ReviewResponse.fromJson(json)).toList();
       setState(() {
         _reviews = reviews;
-        _applyRatingFilter(); // Apply the filter after updating reviews
+        _applyRatingFilter();
       });
     } else {
       throw Exception('Failed to fetch reviews');
@@ -283,7 +282,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       if (_minRatingFilter > 0) {
         _filteredReviews = _reviews.where((review) => review.score >= _minRatingFilter).toList();
       } else {
-        _filteredReviews = _reviews; // Show all reviews when no filter is applied
+        _filteredReviews = _reviews;
       }
     });
   }

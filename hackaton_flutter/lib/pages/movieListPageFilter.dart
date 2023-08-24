@@ -95,10 +95,8 @@ Future<void> _deleteMovie(MovieResponse movie) async {
         );
       },
     );
-    // 삭제 성공
-    _fetchMovies(); // 영화 목록 다시 불러오기
+    _fetchMovies();
   } else {
-    // 삭제 실패
     showDialog(
       context: context,
       builder: (context) {
@@ -130,14 +128,14 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieResponse movie) {
           TextButton(
             child: Text('네'),
             onPressed: () async {
-              Navigator.of(context).pop(); // 팝업 창 닫기
-              await _deleteMovie(movie); // 영화 삭제 함수 호출
+              Navigator.of(context).pop();
+              await _deleteMovie(movie);
             },
           ),
           TextButton(
             child: Text('아니요'),
             onPressed: () {
-              Navigator.of(context).pop(); // 팝업 창 닫기
+              Navigator.of(context).pop();
             },
           ),
         ],
@@ -179,7 +177,7 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieResponse movie) {
                     if (_selectedGenre != value) {
                       _selectedGenre = value;
                     } else {
-                      _selectedGenre = null; // 필터링 해제
+                      _selectedGenre = null;
                     }
                     _fetchMovies();
                   });
@@ -198,7 +196,7 @@ void _showDeleteConfirmationDialog(BuildContext context, MovieResponse movie) {
                     if (_selectedOnScreen != value) {
                       _selectedOnScreen = value;
                     } else {
-                      _selectedOnScreen = null; // 필터링 해제
+                      _selectedOnScreen = null;
                     }
                     _fetchMovies();
                   });
